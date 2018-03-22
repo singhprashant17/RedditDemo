@@ -9,7 +9,7 @@ public interface MvpView {
     /**
      * @return the current context (ex. Activity, Fragment)
      */
-    Context getContext();
+    Context getAndroidContext();
 
     /**
      * This method is used to indicate any error/success messages that comes during the process

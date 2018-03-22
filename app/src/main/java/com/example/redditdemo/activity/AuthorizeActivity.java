@@ -2,10 +2,12 @@ package com.example.redditdemo.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -58,11 +60,15 @@ public class AuthorizeActivity extends MvpActivity<AuthorizationPresenter, Autho
                 if (uri.getQueryParameter("error") != null) {
                     String error = uri.getQueryParameter("error");
                     Log.d(TAG, "shouldOverrideUrlLoading: error " + error);
+                    showMessage(getString(R.string.error));
                 } else {
                     String state = uri.getQueryParameter("state");
                     if (state.equals(STATE)) {
+                        webView.setVisibility(View.INVISIBLE);
                         String code = uri.getQueryParameter("code");
                         getAccessToken(code);
+                    } else {
+                        startSignIn();
                     }
                 }
                 return super.shouldOverrideUrlLoading(view, url);
@@ -81,7 +87,7 @@ public class AuthorizeActivity extends MvpActivity<AuthorizationPresenter, Autho
     }
 
     @Override
-    public Context getContext() {
+    public Context getAndroidContext() {
         return this;
     }
 
@@ -99,5 +105,11 @@ public class AuthorizeActivity extends MvpActivity<AuthorizationPresenter, Autho
     @Override
     public void stopLoading() {
         progressDialog.dismiss();
+    }
+
+    @Override
+    public void onSuccess() {
+        startActivity(new Intent(this, HomeActivity.class));
+        finish();
     }
 }

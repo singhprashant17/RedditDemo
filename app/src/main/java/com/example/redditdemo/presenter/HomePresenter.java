@@ -1,16 +1,12 @@
 package com.example.redditdemo.presenter;
 
-import android.util.Log;
-
 import com.example.redditdemo.R;
-import com.example.redditdemo.model.AuthorizationResponse;
-import com.example.redditdemo.utility.Constants;
-import com.example.redditdemo.utility.PreferencesManager;
 import com.example.redditdemo.utility.Utility;
-import com.example.redditdemo.viewinterface.AuthorizationView;
+import com.example.redditdemo.viewinterface.HomeView;
 import com.example.redditdemo.webapi.NoInternetException;
 import com.example.redditdemo.webapi.WebService;
 import com.exmaple.androidmvp.MvpPresenter;
+import com.google.gson.JsonElement;
 
 import rx.SingleSubscriber;
 import rx.Subscription;
@@ -18,27 +14,24 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-import static com.example.redditdemo.utility.Constants.Url.REDIRECT_URI;
-
-public class AuthorizationPresenter implements MvpPresenter<AuthorizationView> {
-    private static final String TAG = AuthorizationPresenter.class.getSimpleName();
-    private AuthorizationView view;
+public class HomePresenter implements MvpPresenter<HomeView> {
+    private HomeView view;
     private Subscription subscription = Subscriptions.empty();
 
     @Override
-    public void attach(AuthorizationView view) {
+    public void attach(HomeView view) {
         this.view = view;
     }
 
     @Override
     public void detach() {
-        subscription.unsubscribe();
         view.stopLoading();
+        subscription.unsubscribe();
     }
 
-    public void authorizeClient(String code) {
+    public void getPopularReddits() {
         subscription = WebService.createService()
-                .authorizeClient(Constants.AUTHORIZATION_CODE, code, REDIRECT_URI)
+                .getPopularReddits()
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe(() -> {
                     // chk if network available
@@ -46,7 +39,6 @@ public class AuthorizationPresenter implements MvpPresenter<AuthorizationView> {
                         throw new NoInternetException();
                     }
                 })
-                .doOnSuccess(response -> PreferencesManager.saveObject(Constants.SharedPrefs.AUTHORIZATION, response))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(() -> view.startLoading(view.getAndroidContext().getString(R.string.loading)))
                 .doOnError(throwable -> {
@@ -54,13 +46,11 @@ public class AuthorizationPresenter implements MvpPresenter<AuthorizationView> {
                         view.showMessage(view.getAndroidContext().getString(R.string.no_internet));
                     }
                 })
-                .subscribe(new SingleSubscriber<AuthorizationResponse>() {
+                .subscribe(new SingleSubscriber<JsonElement>() {
                     @Override
-                    public void onSuccess(AuthorizationResponse response) {
-                        Log.d(TAG, "onSuccess: " + response.toString());
+                    public void onSuccess(JsonElement response) {
                         view.stopLoading();
                         view.showMessage(view.getAndroidContext().getString(R.string.success));
-                        view.onSuccess();
                     }
 
                     @Override

@@ -19,12 +19,29 @@ public final class WebService {
     private WebService() {
     }
 
-    /**
-     * basic retrofit instance generator
-     */
+    @NonNull
+    private static Retrofit getRetrofitInstanceForAuthorization() {
+
+        final OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(chain -> {
+            Request request = chain.request().newBuilder()
+                    .addHeader("User-Agent", "Sample App")
+                    .addHeader("Authorization", "Basic " +
+                            Base64.encodeToString((CLIENT_ID + ":").getBytes(), Base64.NO_WRAP))
+                    .build();
+
+            return chain.proceed(request);
+        }).addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)).build();
+
+        return new Retrofit.Builder()
+                .baseUrl(BuildConfig.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(httpClient)
+                .build();
+    }
+
     @NonNull
     private static Retrofit getRetrofitInstance() {
-
         final OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(chain -> {
             Request request = chain.request().newBuilder()
                     .addHeader("User-Agent", "Sample App")
