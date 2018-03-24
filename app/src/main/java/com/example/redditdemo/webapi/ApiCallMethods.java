@@ -1,6 +1,7 @@
 package com.example.redditdemo.webapi;
 
 import com.example.redditdemo.model.AuthorizationResponse;
+import com.example.redditdemo.model.PopularRedditsResponse;
 import com.google.gson.JsonElement;
 
 import retrofit2.http.Field;
@@ -20,5 +21,8 @@ public interface ApiCallMethods {
     );
 
     @GET("/subreddits/popular.json")
-    Single<JsonElement> getPopularReddits();
+    Single<PopularRedditsResponse> getPopularReddits();
+
+    @GET("/")
+    Single<JsonElement> getRedditDetail();
 }

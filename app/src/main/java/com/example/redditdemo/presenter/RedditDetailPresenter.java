@@ -1,12 +1,12 @@
 package com.example.redditdemo.presenter;
 
 import com.example.redditdemo.R;
-import com.example.redditdemo.model.PopularRedditsResponse;
 import com.example.redditdemo.utility.Utility;
-import com.example.redditdemo.viewinterface.HomeView;
+import com.example.redditdemo.viewinterface.RedditDetailView;
 import com.example.redditdemo.webapi.NoInternetException;
 import com.example.redditdemo.webapi.WebService;
 import com.exmaple.androidmvp.MvpPresenter;
+import com.google.gson.JsonElement;
 
 import rx.SingleSubscriber;
 import rx.Subscription;
@@ -14,12 +14,12 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-public class HomePresenter implements MvpPresenter<HomeView> {
-    private HomeView view;
+public class RedditDetailPresenter implements MvpPresenter<RedditDetailView> {
+    private RedditDetailView view;
     private Subscription subscription = Subscriptions.empty();
 
     @Override
-    public void attach(HomeView view) {
+    public void attach(RedditDetailView view) {
         this.view = view;
     }
 
@@ -29,9 +29,9 @@ public class HomePresenter implements MvpPresenter<HomeView> {
         subscription.unsubscribe();
     }
 
-    public void getPopularReddits() {
+    public void getRedditDetail() {
         subscription = WebService.createService()
-                .getPopularReddits()
+                .getRedditDetail()
                 .subscribeOn(Schedulers.io())
                 .doOnSubscribe(() -> {
                     // chk if network available
@@ -40,18 +40,19 @@ public class HomePresenter implements MvpPresenter<HomeView> {
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(() -> view.startLoading(view.getAndroidContext().getString(R.string.loading)))
+                .doOnSubscribe(() -> view.startLoading(view.getAndroidContext().getString(R
+                        .string.loading)))
                 .doOnError(throwable -> {
                     if (throwable instanceof NoInternetException) {
                         view.showMessage(view.getAndroidContext().getString(R.string.no_internet));
                     }
                 })
-                .subscribe(new SingleSubscriber<PopularRedditsResponse>() {
+                .subscribe(new SingleSubscriber<JsonElement>() {
                     @Override
-                    public void onSuccess(PopularRedditsResponse response) {
+                    public void onSuccess(JsonElement response) {
                         view.stopLoading();
                         view.showMessage(view.getAndroidContext().getString(R.string.success));
-                        view.displayRedditsList(response.getData().getChildren());
+                        view.displayRedditDetail();
                     }
 
                     @Override

@@ -63,7 +63,7 @@ public class AuthorizeActivity extends MvpActivity<AuthorizationPresenter, Autho
                     showMessage(getString(R.string.error));
                 } else {
                     String state = uri.getQueryParameter("state");
-                    if (state.equals(STATE)) {
+                    if (STATE.equals(state)) {
                         webView.setVisibility(View.INVISIBLE);
                         String code = uri.getQueryParameter("code");
                         getAccessToken(code);

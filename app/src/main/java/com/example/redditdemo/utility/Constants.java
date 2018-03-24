@@ -16,5 +16,6 @@ public final class Constants {
 
     public static final class SharedPrefs {
         public static final String AUTHORIZATION = "authorization";
+        public static final String REDDIT_ID = "reddit_id";
     }
 }
