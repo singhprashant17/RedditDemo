@@ -3,6 +3,7 @@ package com.example.redditdemo;
 import android.app.Application;
 import android.content.Context;
 
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -29,6 +30,7 @@ public class ApplicationClass extends Application {
         // UNIVERSAL IMAGE LOADER SETUP
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
+                .cacheOnDisk(true)
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .showImageForEmptyUri(R.mipmap.ic_launcher)
                 .showImageOnFail(R.mipmap.ic_launcher)
@@ -38,7 +40,7 @@ public class ApplicationClass extends Application {
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                 .defaultDisplayImageOptions(defaultOptions)
-                .memoryCache(new WeakMemoryCache())
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
                 .build();
 
         ImageLoader.getInstance().init(config);

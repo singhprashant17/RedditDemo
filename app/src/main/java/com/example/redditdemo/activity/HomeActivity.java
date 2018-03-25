@@ -91,7 +91,7 @@ public class HomeActivity extends MvpActivity<HomePresenter, HomeView> implement
     @Override
     public void onItemClicked(RecyclerView.Adapter adapter, RecyclerView.ViewHolder viewHolder,
                               int position) {
-        gotoRedditDetail(this.adapter.getItemAt(position));
+        //gotoRedditDetail(this.adapter.getItemAt(position));
     }
 
     private void gotoRedditDetail(PopularRedditsResponse.DataBeanX.ChildrenBean reddit) {
